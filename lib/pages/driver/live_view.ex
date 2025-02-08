@@ -19,7 +19,7 @@ defmodule Pages.Driver.LiveView do
         }
 
   def build(%Plug.Conn{} = conn) do
-    case Phoenix.LiveViewTest.__live__(conn) do
+    case Phoenix.LiveViewTest.__live__(conn, rebuild_path(conn), []) do
       {:ok, view, html} ->
         %__MODULE__{live: view, conn: conn, rendered: html}
 
@@ -30,6 +30,12 @@ defmodule Pages.Driver.LiveView do
         Pages.visit(conn, new_path)
     end
   end
+
+  defp rebuild_path(%Plug.Conn{request_path: request_path, query_string: ""}),
+    do: request_path
+
+  defp rebuild_path(%Plug.Conn{request_path: request_path, query_string: query_string}),
+    do: request_path <> "?" <> query_string
 
   # # #
 
